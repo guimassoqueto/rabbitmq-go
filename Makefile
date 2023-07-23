@@ -6,3 +6,6 @@ ih:
 
 rmq:
 	docker compose up rabbitmq -d
+
+or:
+	open https://github.com/guimassoqueto/rabbitmq-go
