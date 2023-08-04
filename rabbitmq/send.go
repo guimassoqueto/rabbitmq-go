@@ -22,6 +22,8 @@ func Send(message string) {
 	helpers.FailOnError(err, "Failed to open a channel")
 	defer ch.Close()
 
+	
+
 	q, err := ch.QueueDeclare(
 		variables.RABBITMQ_MAIN_QUEUE, // name
 		false, // durable
@@ -32,6 +34,9 @@ func Send(message string) {
 	)
 	helpers.FailOnError(err, "Failed to declare a queue")
 
+	err = ch.Qos(1, 0, false)
+	helpers.FailOnError(err, "Failed to set a QoS")
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -41,7 +46,8 @@ func Send(message string) {
 		q.Name, // routing key
 		false, // mandatory
 		false, // inmediate
-		ampq.Publishing{
+		ampq.Publishing {
+			DeliveryMode: ampq.Persistent,
 			ContentType: "text/plain",
 			Body: []byte(message),
 		},

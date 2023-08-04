@@ -4,6 +4,7 @@ import (
 	"log"
 	"rabbitmq-go/helpers"
 	"rabbitmq-go/variables"
+	"time"
 
 	ampq "github.com/rabbitmq/amqp091-go"
 )
@@ -31,7 +32,7 @@ func Receive() {
 	msgs, err := ch.Consume(
 		q.Name, // queue
 		"", // consumer
-		true, // auto-ack
+		false, // auto-ack
 		false, //exclusive
 		false, // no-local
 		false, //no-wait
@@ -44,6 +45,9 @@ func Receive() {
 	go func() {
 		for d := range msgs {
 			log.Printf("Received a message: %s", d.Body)
+			time.Sleep(time.Duration(10) * time.Second)
+			log.Panicf("Done!")
+			d.Ack(false)
 		}
 	}()
 
